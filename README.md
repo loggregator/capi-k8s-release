@@ -4,7 +4,12 @@
 1. `helm` (`brew install kubernetes-helm`)
 1. Add the `minikube`'s IP to the list of insecure docker registries of your
    local docker daemon (Either using the Docker Desktop or editing
-   `~/.docker/daemon.json`)
+   `~/.docker/daemon.json`):
+```
+{
+  "insecure-registries" : minikubeIP
+}
+```
 
 
 ### Installing dependencies and CAPI
