@@ -7,7 +7,7 @@
    `~/.docker/daemon.json`):
 ```
 {
-  "insecure-registries" : minikubeIP
+  "insecure-registries" : ["minikubeIP:port"]
 }
 ```
 
