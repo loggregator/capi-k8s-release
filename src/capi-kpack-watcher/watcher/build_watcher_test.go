@@ -1,7 +1,6 @@
 package watcher
 
 import (
-	"github.com/stretchr/testify/mock"
 	"testing"
 
 	"capi_kpack_watcher/mocks"
@@ -9,6 +8,7 @@ import (
 
 	kpack "github.com/pivotal/kpack/pkg/apis/build/v1alpha1"
 	"github.com/sclevine/spec"
+	"github.com/stretchr/testify/mock"
 	corev1 "k8s.io/api/core/v1"
 	duckv1alpha1 "knative.dev/pkg/apis/duck/v1alpha1"
 )
@@ -72,7 +72,7 @@ func TestUpdateFunc(t *testing.T) {
 				oldBuild := &kpack.Build{}
 				newBuild := &kpack.Build{
 					Status: kpack.BuildStatus{
-						PodName: podName,
+						PodName:        podName,
 						StepsCompleted: []string{containerName},
 					},
 				}
