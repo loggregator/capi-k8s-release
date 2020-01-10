@@ -45,7 +45,7 @@ func TestUpdateFunc(t *testing.T) {
 
 		when("build is successful", func() {
 			it.Before(func() {
-				mockCAPI.On("PATCHBuild", guid, successfulBuildStatus()).Return(nil)
+				mockCAPI.On("UpdateBuild", guid, successfulBuildStatus()).Return(nil)
 			})
 
 			it("updates capi with the success status", func() {
@@ -64,7 +64,7 @@ func TestUpdateFunc(t *testing.T) {
 
 		when("build fails", func() {
 			it.Before(func() {
-				mockCAPI.On("PATCHBuild", guid, failedBuildStatus("some error")).Return(nil)
+				mockCAPI.On("UpdateBuild", guid, failedBuildStatus("some error")).Return(nil)
 				mockKubeClient.On("GetContainerLogs", podName, containerName).Return([]byte(fakeLogs), nil)
 			})
 
@@ -96,7 +96,7 @@ func TestUpdateFunc(t *testing.T) {
 
 				bw.UpdateFunc(oldBuild, newBuild)
 
-				mockCAPI.AssertNotCalled(t, "PATCHBuild")
+				mockCAPI.AssertNotCalled(t, "UpdateBuild")
 			})
 		})
 	})

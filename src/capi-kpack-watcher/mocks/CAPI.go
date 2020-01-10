@@ -13,8 +13,8 @@ type CAPI struct {
 	mock.Mock
 }
 
-// PATCHBuild provides a mock function with given fields: guid, status
-func (_m *CAPI) PATCHBuild(guid string, status model.BuildStatus) error {
+// UpdateBuild provides a mock function with given fields: guid, status
+func (_m *CAPI) UpdateBuild(guid string, status model.BuildStatus) error {
 	ret := _m.Called(guid, status)
 
 	var r0 error
