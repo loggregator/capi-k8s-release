@@ -23,13 +23,13 @@ func TestUpdateFunc(t *testing.T) {
 		)
 		var (
 			mockCAPI       *mocks.CAPI
-			mockKubeClient *mocks.Kubernetes
+			mockKubeClient *mocks.KubeClient
 			bw             *buildWatcher
 		)
 
 		it.Before(func() {
 			mockCAPI = new(mocks.CAPI)
-			mockKubeClient = new(mocks.Kubernetes)
+			mockKubeClient = new(mocks.KubeClient)
 
 			bw = new(buildWatcher)
 			bw.client = mockCAPI

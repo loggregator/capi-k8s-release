@@ -1,45 +1,73 @@
 package capi
 
 import (
+	"bytes"
+	"capi_kpack_watcher/model"
+	"crypto/tls"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
 	"os"
 
-	"capi_kpack_watcher/capi/api"
-	"capi_kpack_watcher/model"
-
-	uaaClient "code.cloudfoundry.org/uaa-go-client"
+	"capi_kpack_watcher/auth"
 )
 
-// UpdateBuild updates the status of a build designated by guid.
-func (c *client) UpdateBuild(guid string, status model.BuildStatus) error {
-	//TODO: fetch token, refresh token if needed
-	token, err := c.FetchToken()
+// NewCAPIClient creates a client to be used to communicate with CAPI.
+// The following environment variables must be set:
+//   CAPI_HOST: Hostname of where CAPI is deployed (e.g. katniss.capi.land). If CAPI is deployed into Kubernetes, it
+//              will be bound to a Kubernetes Service. You can then use that Service name here.
+func NewCAPIClient() *Client {
+	// TODO: We may want to consider using cloudfoundry/tlsconfig for using
+	// standard TLS configs in Golang.
+	return &Client{
+		host: os.Getenv("CAPI_HOST"),
+		restClient: &restClient{
+			&http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true,
+					},
+				},
+			},
+		},
+		uaaClient: auth.NewUAAClient(),
+	}
+}
+
+type REST interface {
+	PATCH(url, authToken string, body io.Reader) (*http.Response, error)
+}
+
+type Client struct {
+	host       string
+	restClient REST
+	uaaClient  auth.TokenFetcher
+}
+
+func (c *Client) UpdateBuild(guid string, status model.BuildStatus) error {
+	token, err := c.fetchToken()
 	if err != nil {
 		return err
 	}
 
-	return c.api.UpdateBuild(token, guid, status)
-}
+	json := status.ToJSON()
 
-func (c *client) FetchToken() (string, error) {
-	// Always force update of token.
-	const forceUpdate = true
-	token, err := c.uaaClient.FetchToken(forceUpdate)
+	resp, err := c.restClient.PATCH(
+		fmt.Sprint("https://api.%s/v3/internal/build/%s", c.host, guid),
+		token,
+		bytes.NewReader(json),
+	)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return "Bearer " + token.AccessToken, nil
+	log.Printf("[CAPI/UpdateBuild] Sent payload: %s\n", json)
+	log.Printf("[CAPI/UpdateBuild] Response status: %d\n", resp.StatusCode)
+
+	return nil
 }
 
-// NewCAPIClient creates a client to be used to communicate with CAPI.
-func NewCAPIClient() CAPI {
-	return &client{
-		api:       api.NewAPI(os.Getenv("CAPI_HOST")),
-		uaaClient: NewUAAClient(),
-	}
-}
-
-type client struct {
-	api       api.APIRequester
-	uaaClient uaaClient.Client
+func (c *Client) fetchToken() (string, error) {
+	return auth.Fetch(c.uaaClient)
 }

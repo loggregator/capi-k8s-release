@@ -113,7 +113,7 @@ func (bw *buildWatcher) handleSuccessfulBuild(build *kpack.Build) {
 		State: buildStagedState,
 	}
 
-	if err := bw.client.UpdateBuild(guid, model); err != nil {
+	if err := capi.UpdateBuild(bw.client, guid, model); err != nil {
 		log.Fatalf("[UpdateFunc] Failed to send request: %v\n", err)
 	}
 }
@@ -142,7 +142,7 @@ func (bw *buildWatcher) handleFailedBuild(build *kpack.Build) {
 		model.Error = string(regex.FindSubmatch(logs)[2])
 	}
 
-	if err := bw.client.UpdateBuild(guid, model); err != nil {
+	if err := capi.UpdateBuild(bw.client, guid, model); err != nil {
 		log.Fatalf("[UpdateFunc] Failed to send request: %v\n", err)
 	}
 }
