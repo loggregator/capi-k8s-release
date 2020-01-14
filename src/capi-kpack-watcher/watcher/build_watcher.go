@@ -79,7 +79,7 @@ func (bw *buildWatcher) Run() {
 	bw.informer.Run(stopper)
 }
 
-type kubeClient interface {
+type KubeClient interface {
 	GetContainerLogs(podName, containerName string) ([]byte, error)
 }
 
@@ -87,7 +87,7 @@ type buildWatcher struct {
 	client capi.CAPI // The watcher uses this client to talk to CAPI.
 
 	// The watcher uses this kubernetes client to talk to the Kubernetes master.
-	kubeClient kubeClient
+	kubeClient KubeClient
 
 	// Below are Kubernetes-internal objects for creating Kubernetes Informers.
 	// They are in this struct to abstract away the Informer boilerplate.

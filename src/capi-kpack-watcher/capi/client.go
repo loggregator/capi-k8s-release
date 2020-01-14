@@ -22,7 +22,7 @@ func NewCAPIClient() *Client {
 	// standard TLS configs in Golang.
 	return &Client{
 		host: os.Getenv("CAPI_HOST"),
-		restClient: &restClient{
+		restClient: &RestClient{
 			&http.Client{
 				Transport: &http.Transport{
 					TLSClientConfig: &tls.Config{
@@ -54,7 +54,7 @@ func (c *Client) UpdateBuild(guid string, status model.BuildStatus) error {
 	json := status.ToJSON()
 
 	resp, err := c.restClient.PATCH(
-		fmt.Sprint("https://api.%s/v3/internal/build/%s", c.host, guid),
+		fmt.Sprintf("https://api.%s/v3/internal/build/%s", c.host, guid),
 		token,
 		bytes.NewReader(json),
 	)

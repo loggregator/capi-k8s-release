@@ -4,6 +4,7 @@ package mocks
 
 import (
 	io "io"
+	http "net/http"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -14,15 +15,24 @@ type REST struct {
 }
 
 // PATCH provides a mock function with given fields: url, authToken, body
-func (_m *REST) PATCH(url string, authToken string, body io.Reader) error {
+func (_m *REST) PATCH(url string, authToken string, body io.Reader) (*http.Response, error) {
 	ret := _m.Called(url, authToken, body)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, io.Reader) error); ok {
+	var r0 *http.Response
+	if rf, ok := ret.Get(0).(func(string, string, io.Reader) *http.Response); ok {
 		r0 = rf(url, authToken, body)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*http.Response)
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, string, io.Reader) error); ok {
+		r1 = rf(url, authToken, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }

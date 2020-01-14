@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (r *restClient) PATCH(url, authToken string, body io.Reader) (*http.Response, error) {
+func (r *RestClient) PATCH(url, authToken string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(
 		http.MethodPatch,
 		url,
@@ -30,6 +30,6 @@ func (r *restClient) PATCH(url, authToken string, body io.Reader) (*http.Respons
 	return resp, nil
 }
 
-type restClient struct {
+type RestClient struct {
 	client *http.Client
 }
