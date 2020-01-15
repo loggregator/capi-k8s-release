@@ -56,7 +56,7 @@ func NewBuildWatcher(c kpackclient.Interface) Watcher {
 	factory := kpackinformer.NewSharedInformerFactory(c, 0)
 
 	bw := &buildWatcher{
-		client:     capi.NewCAPIClient(),
+		buildUpdater:     capi.NewCAPIClient(),
 		kubeClient: kubernetes.NewInClusterClient(),
 		informer:   factory.Build().V1alpha1().Builds().Informer(),
 	}
@@ -84,7 +84,7 @@ type KubeClient interface {
 }
 
 type buildWatcher struct {
-	client capi.CAPI // The watcher uses this client to talk to CAPI.
+	buildUpdater BuildUpdater // The watcher uses this client to talk to CAPI.
 
 	// The watcher uses this kubernetes client to talk to the Kubernetes master.
 	kubeClient KubeClient
@@ -92,6 +92,10 @@ type buildWatcher struct {
 	// Below are Kubernetes-internal objects for creating Kubernetes Informers.
 	// They are in this struct to abstract away the Informer boilerplate.
 	informer cache.SharedIndexInformer
+}
+
+type BuildUpdater interface {
+	UpdateBuild(guid string, model model.BuildStatus) error
 }
 
 func (bw *buildWatcher) isBuildGUIDMissing(build *kpack.Build) bool {
@@ -113,7 +117,7 @@ func (bw *buildWatcher) handleSuccessfulBuild(build *kpack.Build) {
 		State: buildStagedState,
 	}
 
-	if err := capi.UpdateBuild(bw.client, guid, model); err != nil {
+	if err := bw.buildUpdater.UpdateBuild(guid, model); err != nil {
 		log.Fatalf("[UpdateFunc] Failed to send request: %v\n", err)
 	}
 }
@@ -142,7 +146,7 @@ func (bw *buildWatcher) handleFailedBuild(build *kpack.Build) {
 		model.Error = string(regex.FindSubmatch(logs)[2])
 	}
 
-	if err := capi.UpdateBuild(bw.client, guid, model); err != nil {
+	if err := bw.buildUpdater.UpdateBuild(guid, model); err != nil {
 		log.Fatalf("[UpdateFunc] Failed to send request: %v\n", err)
 	}
 }
