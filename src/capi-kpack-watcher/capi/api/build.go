@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,8 +9,8 @@ import (
 )
 
 func (a *api) UpdateBuild(token, guid string, status model.BuildStatus) error {
-	url := fmt.Sprintf("https://api.%s/v3/internal/builds/%s", a.host, guid)
-
+	//url := fmt.Sprintf("https://api.%s/v3/internal/builds/%s", a.host, guid)
+	url := "/"
 	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewReader(status.ToJSON()))
 	if err != nil {
 		return err
@@ -34,3 +33,4 @@ func (a *api) UpdateBuild(token, guid string, status model.BuildStatus) error {
 
 	return nil
 }
+//https://api.some-host/v3/internal/builds/guid
