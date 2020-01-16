@@ -12,8 +12,8 @@ import (
 // Fetch implements the TokenFetcher interface, fetching tokens from UAA. This stands as an anti-corruption layer over
 // the actual FetchToken call.
 func (u *UAAClient) Fetch() (string, error) {
-	// Always force update of token.
-	const forceUpdate = true
+	// allow uaa-go-client to handle token caching
+	const forceUpdate = false
 	token, err := u.FetchToken(forceUpdate)
 	if err != nil {
 		return "", err

@@ -35,25 +35,31 @@ func NewCAPIClient() *Client {
 	}
 }
 
-type REST interface {
-	PATCH(url, authToken string, body io.Reader) (*http.Response, error)
+//go:generate mockery -case snake -name Rest
+type Rest interface {
+	Patch(url string, authToken string, body io.Reader) (*http.Response, error)
+}
+
+//go:generate mockery -case snake -name TokenFetcher
+type TokenFetcher interface {
+	Fetch() (string, error)
 }
 
 type Client struct {
 	host       string
-	restClient REST
-	uaaClient  auth.TokenFetcher
+	restClient Rest
+	uaaClient  TokenFetcher
 }
 
 func (c *Client) UpdateBuild(guid string, status model.BuildStatus) error {
-	token, err := c.fetchToken()
+	token, err := c.uaaClient.Fetch()
 	if err != nil {
 		return err
 	}
 
 	json := status.ToJSON()
 
-	resp, err := c.restClient.PATCH(
+	resp, err := c.restClient.Patch(
 		fmt.Sprintf("https://api.%s/v3/internal/build/%s", c.host, guid),
 		token,
 		bytes.NewReader(json),
@@ -66,8 +72,4 @@ func (c *Client) UpdateBuild(guid string, status model.BuildStatus) error {
 	log.Printf("[CAPI/UpdateBuild] Response status: %d\n", resp.StatusCode)
 
 	return nil
-}
-
-func (c *Client) fetchToken() (string, error) {
-	return auth.Fetch(c.uaaClient)
 }

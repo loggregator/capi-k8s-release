@@ -50,7 +50,7 @@ func TestRestClient_PATCH(t *testing.T) {
 			})
 
 			it("responds with StatusOK returned from CAPI", func() {
-				response, err := restClient.PATCH(testServer.URL, authToken, body)
+				response, err := restClient.Patch(testServer.URL, authToken, body)
 				assert.Equal(t, http.StatusOK, response.StatusCode)
 				assert.NoError(t, err)
 			})

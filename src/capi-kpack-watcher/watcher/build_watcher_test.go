@@ -3,8 +3,8 @@ package watcher
 import (
 	"testing"
 
-	"capi_kpack_watcher/mocks"
 	"capi_kpack_watcher/model"
+	"capi_kpack_watcher/watcher/mocks"
 
 	kpack "github.com/pivotal/kpack/pkg/apis/build/v1alpha1"
 	"github.com/sclevine/spec"
@@ -22,16 +22,16 @@ func TestUpdateFunc(t *testing.T) {
 			fakeLogs      = "ERROR:some error" // Must match regex pattern in UpdateFunc.
 		)
 		var (
-			buildUpdater   *mocks.CAPI
+			buildUpdater   *mocks.BuildUpdater
 			mockKubeClient *mocks.KubeClient
-			bw             *buildWatcher
+			bw             *BuildWatcher
 		)
 
 		it.Before(func() {
-			buildUpdater = new(mocks.CAPI)
+			buildUpdater = new(mocks.BuildUpdater)
 			mockKubeClient = new(mocks.KubeClient)
 
-			bw = new(buildWatcher)
+			bw = new(BuildWatcher)
 			bw.buildUpdater = buildUpdater
 			bw.kubeClient = mockKubeClient
 		})

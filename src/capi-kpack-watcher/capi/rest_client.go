@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (r *RestClient) PATCH(url, authToken string, body io.Reader) (*http.Response, error) {
+func (r *RestClient) Patch(url, authToken string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(
 		http.MethodPatch,
 		url,
@@ -16,7 +16,7 @@ func (r *RestClient) PATCH(url, authToken string, body io.Reader) (*http.Respons
 		return nil, err
 	}
 
-	log.Printf("[CAPI/PATCH] Sending request PATCH %s", url)
+	log.Printf("[CAPI/Patch] Sending request Patch %s", url)
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", authToken)
