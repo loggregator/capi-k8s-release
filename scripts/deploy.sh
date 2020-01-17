@@ -18,4 +18,5 @@ ${SCRIPT_DIR}/build.sh
 docker push $(minikube ip):5000/capi
 
 #capi
-helm template "${SCRIPT_DIR}/.." --set-string system_domain=minikube.local -f "${SCRIPT_DIR}/capi-values.yaml" | kubectl apply -f -
+#helm template "${SCRIPT_DIR}/.." --set-string system_domain=minikube.local -f "${SCRIPT_DIR}/capi-values.yaml" | kubectl apply -f -
+ytt -f "${REPO_BASE_DIR}/templates"  -f "${REPO_BASE_DIR}/ytt-values.yml" | kapp -y deploy -a capi -f -
