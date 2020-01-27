@@ -1,0 +1,9 @@
+#@data/values
+---
+ccdb:
+  adapter: mysql
+  host: 192.168.64.1
+  port: 3306
+  user: root
+  password: password
+  database: cloud_controller
